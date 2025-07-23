@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class ServerManagementService {
+
     private final ProxyServer proxyServer;
     private final DatabaseManager databaseManager;
     private final Logger logger;
@@ -40,7 +41,7 @@ public class ServerManagementService {
 
                 // Create server info
                 net.minehub.velocity.models.ServerInfo serverInfo = new net.minehub.velocity.models.ServerInfo(
-                    name, host, port, ownerUuid, ownerName
+                        name, host, port, ownerUuid, ownerName
                 );
 
                 // Test server connectivity
@@ -50,16 +51,15 @@ public class ServerManagementService {
                 // Add to database
                 databaseManager.addServer(serverInfo);
 
-                // Register with proxy
+                // Register with proxy (correct usage)
                 ServerInfo velocityServerInfo = new ServerInfo(name, new InetSocketAddress(host, port));
-                RegisteredServer registeredServer = proxyServer.registerServer(velocityServerInfo);
+                proxyServer.registerServer(velocityServerInfo);
 
                 // Store in managed servers
                 managedServers.put(name, serverInfo);
 
                 logger.info("Server {} added successfully (Online: {})", name, isOnline);
                 return true;
-
             } catch (SQLException e) {
                 logger.error("Failed to add server {} to database", name, e);
                 return false;
@@ -75,9 +75,7 @@ public class ServerManagementService {
             try {
                 // Remove from proxy
                 Optional<RegisteredServer> server = proxyServer.getServer(name);
-                if (server.isPresent()) {
-                    proxyServer.unregisterServer(server.get());
-                }
+                server.ifPresent(proxyServer::unregisterServer);
 
                 // Remove from database
                 databaseManager.removeServer(name);
@@ -87,7 +85,6 @@ public class ServerManagementService {
 
                 logger.info("Server {} removed successfully", name);
                 return true;
-
             } catch (SQLException e) {
                 logger.error("Failed to remove server {} from database", name, e);
                 return false;
@@ -104,10 +101,10 @@ public class ServerManagementService {
 
             for (net.minehub.velocity.models.ServerInfo serverInfo : servers) {
                 try {
-                    // Register with proxy
+                    // Register with proxy (correct usage)
                     ServerInfo velocityServerInfo = new ServerInfo(
-                        serverInfo.getName(), 
-                        new InetSocketAddress(serverInfo.getHost(), serverInfo.getPort())
+                            serverInfo.getName(),
+                            new InetSocketAddress(serverInfo.getHost(), serverInfo.getPort())
                     );
                     proxyServer.registerServer(velocityServerInfo);
 
@@ -115,14 +112,12 @@ public class ServerManagementService {
                     managedServers.put(serverInfo.getName(), serverInfo);
 
                     logger.debug("Loaded server: {}", serverInfo.getName());
-
                 } catch (Exception e) {
                     logger.error("Failed to load server {}", serverInfo.getName(), e);
                 }
             }
 
             logger.info("Loaded {} servers from database", servers.size());
-
         } catch (SQLException e) {
             logger.error("Failed to load servers from database", e);
         }
@@ -133,21 +128,17 @@ public class ServerManagementService {
             for (net.minehub.velocity.models.ServerInfo serverInfo : managedServers.values()) {
                 try {
                     boolean isOnline = ServerPingUtil.pingServer(
-                        serverInfo.getHost(), 
-                        serverInfo.getPort(), 
-                        3000
+                            serverInfo.getHost(),
+                            serverInfo.getPort(),
+                            3000
                     );
-
                     if (serverInfo.isOnline() != isOnline) {
                         serverInfo.setOnline(isOnline);
                         databaseManager.updateServerStatus(serverInfo.getName(), isOnline);
 
-                        logger.debug("Server {} status updated: {}", 
-                            serverInfo.getName(), 
-                            isOnline ? "Online" : "Offline"
-                        );
+                        logger.debug("Server {} status updated: {}",
+                                serverInfo.getName(), isOnline ? "Online" : "Offline");
                     }
-
                 } catch (Exception e) {
                     logger.error("Failed to update status for server {}", serverInfo.getName(), e);
                 }
@@ -158,14 +149,11 @@ public class ServerManagementService {
     public CompletableFuture<List<net.minehub.velocity.models.ServerInfo>> getOfflineServers(int hoursOffline) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                List<net.minehub.velocity.models.ServerInfo> offlineServers = 
-                    databaseManager.getOfflineServers(hoursOffline);
-
-                logger.debug("Found {} servers offline for more than {} hours", 
-                    offlineServers.size(), hoursOffline);
-
+                List<net.minehub.velocity.models.ServerInfo> offlineServers =
+                        databaseManager.getOfflineServers(hoursOffline);
+                logger.debug("Found {} servers offline for more than {} hours",
+                        offlineServers.size(), hoursOffline);
                 return offlineServers;
-
             } catch (SQLException e) {
                 logger.error("Failed to get offline servers", e);
                 return List.of();
@@ -176,19 +164,16 @@ public class ServerManagementService {
     public CompletableFuture<Void> cleanupOfflineServers(int hoursOffline) {
         return CompletableFuture.runAsync(() -> {
             try {
-                List<net.minehub.velocity.models.ServerInfo> offlineServers = 
-                    databaseManager.getOfflineServers(hoursOffline);
-
+                List<net.minehub.velocity.models.ServerInfo> offlineServers =
+                        databaseManager.getOfflineServers(hoursOffline);
                 for (net.minehub.velocity.models.ServerInfo server : offlineServers) {
                     removeServer(server.getName()).join();
-                    logger.info("Cleaned up offline server: {} (offline for {}+ hours)", 
-                        server.getName(), hoursOffline);
+                    logger.info("Cleaned up offline server: {} (offline for {}+ hours)",
+                            server.getName(), hoursOffline);
                 }
-
                 if (!offlineServers.isEmpty()) {
                     logger.info("Cleaned up {} offline servers", offlineServers.size());
                 }
-
             } catch (SQLException e) {
                 logger.error("Failed to cleanup offline servers", e);
             }
