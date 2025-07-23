@@ -1,0 +1,10 @@
+{
+  "id": "minehub-velocity",
+  "name": "MineHub Velocity Plugin",
+  "version": "1.0.0",
+  "description": "Dynamic server management plugin for MineHub network",
+  "authors": ["MineHub Team"],
+  "dependencies": [],
+  "url": "https://github.com/minehub/velocity-plugin",
+  "main": "net.minehub.velocity.MineHubVelocityPlugin"
+}

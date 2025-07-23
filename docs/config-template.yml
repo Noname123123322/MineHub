@@ -1,0 +1,55 @@
+# MineHub Velocity Plugin Configuration Template
+# Copy this file to plugins/minehub-velocity/config.yml and modify as needed
+
+# Database Configuration
+# IMPORTANT: Change these settings to match your database setup!
+database:
+  host: "localhost"                    # Your MySQL/MariaDB server hostname
+  port: 3306                          # Database port (usually 3306)
+  database: "minehub"                 # Database name
+  username: "minehub"                 # Database username
+  password: "CHANGE_THIS_PASSWORD"    # Database password - CHANGE THIS!
+
+  # Advanced database settings (usually don't need to change)
+  pool-size: 10
+  connection-timeout: 30000
+  idle-timeout: 600000
+  max-lifetime: 1800000
+
+# Server Management Settings
+server:
+  # Cleanup settings
+  cleanup-interval-hours: 72          # Remove servers offline for this many hours
+
+  # User limits
+  max-servers-per-user: 5             # Maximum servers per user
+
+  # Default settings
+  default-hub-server: "lobby"         # Default hub server name
+  ping-timeout: 5000                  # Server ping timeout in ms
+
+# Customize Messages (Use & for color codes)
+messages:
+  server-added: "&aServer '{0}' has been added to the network!"
+  server-removed: "&cServer '{0}' has been removed from the network!"
+  server-offline: "&cServer '{0}' is currently offline!"
+  server-not-found: "&cServer '{0}' not found!"
+  no-permission: "&cYou don't have permission to use this command!"
+  max-servers-reached: "&cYou have reached the maximum number of servers ({0})!"
+  connecting-to-server: "&eConnecting to {0}..."
+
+# Feature Settings
+compatibility:
+  geyser-support: true                # Enable Geyser/Bedrock support
+
+# Logging Settings
+logging:
+  debug: false                        # Enable debug logging
+  log-status-changes: true            # Log when servers go online/offline
+  log-player-connections: true       # Log player connections
+
+# Performance Settings
+performance:
+  async-operations: true              # Use async database operations
+  cache-server-status: true          # Cache server status
+  batch-updates: true                 # Batch database updates

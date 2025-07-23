@@ -1,0 +1,83 @@
+# MineHub Velocity Plugin Configuration
+# This file contains all the configuration options for the MineHub plugin
+
+# Database Configuration
+database:
+  # MySQL database connection settings
+  host: "localhost"
+  port: 3306
+  database: "minehub"
+  username: "minehub"
+  password: "change_this_password"
+
+  # Connection pool settings
+  pool-size: 10
+  connection-timeout: 30000
+  idle-timeout: 600000
+  max-lifetime: 1800000
+
+# Server Management Settings
+server:
+  # How long (in hours) a server can be offline before being automatically deleted
+  cleanup-interval-hours: 72
+
+  # Maximum number of servers a single user can add
+  max-servers-per-user: 5
+
+  # Default hub server name (used for fallback)
+  default-hub-server: "lobby"
+
+  # Server ping timeout in milliseconds
+  ping-timeout: 5000
+
+# Plugin Messages
+messages:
+  server-added: "&aServer '{0}' has been added to the network!"
+  server-removed: "&cServer '{0}' has been removed from the network!"
+  server-offline: "&cServer '{0}' is currently offline!"
+  server-not-found: "&cServer '{0}' not found!"
+  no-permission: "&cYou don't have permission to use this command!"
+  max-servers-reached: "&cYou have reached the maximum number of servers ({0})!"
+  invalid-server-name: "&cInvalid server name! Use only letters, numbers, hyphens, and underscores."
+  connecting-to-server: "&eConnecting to {0}..."
+  database-error: "&cA database error occurred. Please try again later."
+
+# GUI Settings (for future implementation)
+gui:
+  title: "&6MineHub Server Selector"
+  size: 54
+  online-server-item: "LIME_STAINED_GLASS_PANE"
+  offline-server-item: "RED_STAINED_GLASS_PANE"
+
+# Compatibility Settings
+compatibility:
+  # Support for Geyser (Bedrock players)
+  geyser-support: true
+
+  # Supported Minecraft versions
+  supported-versions:
+    - "1.8.9"
+    - "1.9.x"
+    - "1.10.x"
+    - "1.11.x"
+    - "1.12.x"
+    - "1.13.x"
+    - "1.14.x"
+    - "1.15.x"
+    - "1.16.x"
+    - "1.17.x"
+    - "1.18.x"
+    - "1.19.x"
+    - "1.20.x"
+    - "1.21.x"
+
+# Logging Settings
+logging:
+  # Enable debug logging
+  debug: false
+
+  # Log server status changes
+  log-status-changes: true
+
+  # Log player connections
+  log-player-connections: true
